@@ -32,7 +32,7 @@ export default function Layout({ children }: Readonly<Props>) {
             <QueryProvider>
               <main>{children}</main>
             </QueryProvider>
-            <Toaster />
+            <Toaster richColors />
           </ThemeProvider>
         </body>
       </html>
