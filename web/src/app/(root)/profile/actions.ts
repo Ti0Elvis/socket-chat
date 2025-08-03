@@ -1,5 +1,7 @@
 "use server";
+import { _axios } from "@/providers/axios";
 import { clerkClient } from "@clerk/nextjs/server";
+import { CustomAxiosError } from "@/lib/custom-axios-error";
 
 export async function delete_account(id: string | undefined) {
   try {
@@ -11,9 +13,17 @@ export async function delete_account(id: string | undefined) {
 
     await client.users.deleteUser(id);
 
-    return { message: "User deleted successfully", error: undefined };
+    const response = await _axios.delete(`/user/delete/${id}`);
+
+    return { message: response.data, error: undefined };
   } catch (error) {
-    console.error(error);
-    return { message: undefined, error: "Internal server error" };
+    const custom_error = new CustomAxiosError(error);
+
+    console.error(error, { message: custom_error.message });
+
+    return {
+      message: undefined,
+      error: custom_error.message ?? "Unexpected error occurred",
+    };
   }
 }
