@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
+import { Header } from "./components/header";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/providers/query.provider";
@@ -30,7 +31,10 @@ export default function Layout({ children }: Readonly<Props>) {
             enableSystem
             disableTransitionOnChange>
             <QueryProvider>
-              <main>{children}</main>
+              <Header />
+              <main className="w-full min-h-[calc(100vh-4rem)]">
+                {children}
+              </main>
             </QueryProvider>
             <Toaster richColors />
           </ThemeProvider>

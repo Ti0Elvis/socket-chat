@@ -21,7 +21,7 @@ export default async function Page() {
 
   return (
     <SignedOut>
-      <MaxWidthWrapper className="w-full h-screen flex items-center justify-center">
+      <MaxWidthWrapper className="w-full min-h-[calc(100vh-4rem)] flex items-center justify-center">
         <Card className="w-full max-w-96">
           <CardHeader>
             <CardTitle>
