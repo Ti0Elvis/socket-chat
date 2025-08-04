@@ -1,0 +1,25 @@
+import { User } from "@/modules/user/user.schema";
+import { type HydratedDocument, Types } from "mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+
+export type RoomDocument = HydratedDocument<Room>;
+
+@Schema({ timestamps: true })
+export class Room {
+  @Prop({ type: String, unique: true, required: true })
+  name: string;
+
+  @Prop({ type: String, required: true })
+  language: string;
+
+  @Prop({ type: Types.ObjectId, ref: User.name, required: true })
+  owner: Types.ObjectId;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: User.name }], default: [] })
+  users: Array<Types.ObjectId>;
+
+  @Prop({ type: String, required: true })
+  tag: string;
+}
+
+export const RoomSchema = SchemaFactory.createForClass(Room);
