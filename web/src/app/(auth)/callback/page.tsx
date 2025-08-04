@@ -2,26 +2,22 @@
 import { LoaderIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { register_user_with_api } from "./actions";
+import { register_user_on_nestjs_api } from "./actions";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
 
 export default function Page() {
   const { push } = useRouter();
 
   useQuery({
-    queryKey: ["register-user-with-api"],
+    queryKey: ["register-user-on-nestjs-api"],
     queryFn: async () => {
-      const { message, error } = await register_user_with_api();
+      const response = await register_user_on_nestjs_api();
 
-      if (error !== undefined) {
-        throw new Error(error);
-      }
-
-      if (message !== undefined) {
+      if (response.status === 201) {
         push("/rooms");
       }
 
-      return message;
+      return response.data;
     },
     retry: true,
     retryDelay: 1250,

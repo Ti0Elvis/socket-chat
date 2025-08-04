@@ -1,27 +1,23 @@
 "use server";
-import { _axios } from "@/providers/axios";
 import { currentUser } from "@clerk/nextjs/server";
-import { CustomAxiosError } from "@/lib/custom-axios-error";
+import { axios_instance, CustomAxiosError } from "@/lib/axios";
 
-export async function is_user_registered_with_api() {
+export async function find_user_on_nestjs_api() {
   try {
     const user = await currentUser();
 
     if (user === null) {
-      return { message: undefined, error: "Invalid user" };
+      throw new Error("Invalid user");
     }
 
-    const response = await _axios.get(`/user/find-by-clerkId/${user.id}`);
+    const response = await axios_instance.get(
+      `/user/find-by-clerkId/${user.id}`
+    );
 
-    return { message: response.data, error: undefined };
+    return { data: response.data, status: response.status };
   } catch (error) {
-    const custom_error = new CustomAxiosError(error);
+    const e = new CustomAxiosError(error);
 
-    console.error(error, { message: custom_error.message });
-
-    return {
-      message: undefined,
-      error: custom_error.message ?? "Unexpected error occurred",
-    };
+    return { error: e.message, status: e.status };
   }
 }

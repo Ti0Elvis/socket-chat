@@ -9,13 +9,13 @@ import {
 import { currentUser } from "@clerk/nextjs/server";
 import { ModeToggle } from "@/components/mode-toggle";
 import { SignedIn, SignOutButton } from "@clerk/nextjs";
-import { is_user_registered_with_api } from "../(root)/actions";
+import { find_user_on_nestjs_api } from "../(root)/actions";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export async function Header() {
   const user = await currentUser();
-  const { error } = await is_user_registered_with_api();
+  const { error } = await find_user_on_nestjs_api();
 
   return (
     <header className="w-full h-16 sticky top-0 left-0 border-b bg-background/75 backdrop-blur-md">

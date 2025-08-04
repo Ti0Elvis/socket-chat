@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useClerk } from "@clerk/nextjs";
 import { Trash2Icon } from "lucide-react";
-import { delete_account } from "../actions";
+import { delete_account } from "./actions";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 
@@ -32,13 +32,13 @@ export function DeleteAccount({ id }: Readonly<Props>) {
 
       signOut({ redirectUrl: "/" });
 
-      const { message, error } = await delete_account(id);
+      const { data, error } = await delete_account(id);
 
       if (error !== undefined) {
         throw new Error(error);
       }
 
-      return message;
+      return data;
     },
     onSuccess: (message) => {
       toast.success(message);
