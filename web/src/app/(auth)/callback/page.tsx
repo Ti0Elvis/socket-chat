@@ -11,13 +11,17 @@ export default function Page() {
   useQuery({
     queryKey: ["register-user-on-nestjs-api"],
     queryFn: async () => {
-      const response = await register_user_on_nestjs_api();
+      const { data, status, error } = await register_user_on_nestjs_api();
 
-      if (response.status === 201) {
+      if (status === 201) {
         push("/rooms");
       }
 
-      return response.data;
+      if (error !== undefined) {
+        throw new Error(error);
+      }
+
+      return data;
     },
     retry: true,
     retryDelay: 1250,

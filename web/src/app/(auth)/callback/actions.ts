@@ -1,5 +1,5 @@
 "use server";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { axios_instance, CustomAxiosError } from "@/lib/axios";
 
 export async function register_user_on_nestjs_api() {
@@ -9,6 +9,8 @@ export async function register_user_on_nestjs_api() {
     if (user === null) {
       throw new Error("Invalid user");
     }
+
+    const token = await (await auth()).getToken();
 
     // Create user in nestjs API
     const response = await axios_instance.post<string>(
@@ -21,7 +23,11 @@ export async function register_user_on_nestjs_api() {
         imageUrl: user.imageUrl,
         emailAddress: user.primaryEmailAddress?.emailAddress,
       },
-      {}
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
 
     return { data: response.data, status: response.status };

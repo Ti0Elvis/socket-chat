@@ -1,5 +1,5 @@
 "use server";
-import { clerkClient } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { axios_instance, CustomAxiosError } from "@/lib/axios";
 
 export async function delete_account(id: string | undefined) {
@@ -8,13 +8,20 @@ export async function delete_account(id: string | undefined) {
       throw new Error("The id of the user cannot be undefined");
     }
 
+    const token = await (await auth()).getToken();
+
     // Delete clerk account
     const client = await clerkClient();
     await client.users.deleteUser(id);
 
     // Delete nestjs user
     const response = await axios_instance.delete<string>(
-      `/user/delete-by-clerkId/${id}`
+      `/user/delete-by-clerkId/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
 
     return { data: response.data, status: response.status };

@@ -1,5 +1,5 @@
 "use server";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { axios_instance, CustomAxiosError } from "@/lib/axios";
 
 export async function find_user_on_nestjs_api() {
@@ -10,8 +10,15 @@ export async function find_user_on_nestjs_api() {
       throw new Error("Invalid user");
     }
 
+    const token = await (await auth()).getToken();
+
     const response = await axios_instance.get(
-      `/user/find-by-clerkId/${user.id}`
+      `/user/find-by-clerkId/${user.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
 
     return { data: response.data, status: response.status };
