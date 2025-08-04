@@ -6,18 +6,18 @@ import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 export class UserController {
   constructor(private _UserService_: UserService) {}
 
-  @Get("/find-by-clerkId/:id")
-  async FindByClerkId(@Param("id") id: string) {
+  @Get("/find-by-clerkId/:clerkId")
+  async FindByClerkId(@Param("clerkId") id: string) {
     return await this._UserService_.FindByClerkId(id);
   }
 
-  @Post("/create")
+  @Post("/register-if-not-exists")
   async RegisterIfNotExists(@Body() body: RegisterUserDto) {
     return await this._UserService_.RegisterIfNotExists(body);
   }
 
-  @Delete("/delete/:id")
-  async Delete(@Param("id") id: string) {
-    return await this._UserService_.Delete(id);
+  @Delete("/delete-by-clerkId/:clerkId")
+  async DeleteByClerkId(@Param("clerkId") id: string) {
+    return await this._UserService_.DeleteByClerkId(id);
   }
 }

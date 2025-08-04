@@ -43,7 +43,7 @@ export class UserService {
     }
   }
 
-  async Delete(id: string) {
+  async DeleteByClerkId(id: string) {
     const user = await this.FindByClerkId(id);
 
     try {
