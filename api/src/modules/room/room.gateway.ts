@@ -3,6 +3,7 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 
@@ -16,5 +17,10 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect(client: Socket) {
     console.log(`Client disconnected: ${client.id}`);
+  }
+
+  @SubscribeMessage("new-room")
+  HandleNewRoom() {
+    this.server.emit("refetch-all-rooms");
   }
 }
