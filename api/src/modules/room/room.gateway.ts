@@ -26,7 +26,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage("new-room")
+  @SubscribeMessage("join-to-room")
   HandleNewRoom() {
     this.server.emit("refetch-all-rooms");
   }
