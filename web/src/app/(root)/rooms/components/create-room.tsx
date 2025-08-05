@@ -67,6 +67,7 @@ export const schema = z.object({
 
 export function CreateRoom() {
   const [dialog, setDialog] = useState(false);
+  const [popover, setPopover] = useState(false);
 
   const { push } = useRouter();
 
@@ -147,7 +148,7 @@ export function CreateRoom() {
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Language</FormLabel>
-                  <Popover>
+                  <Popover open={popover} onOpenChange={setPopover}>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -181,6 +182,7 @@ export function CreateRoom() {
                                 key={language.value}
                                 onSelect={() => {
                                   form.setValue("language", language.value);
+                                  setPopover(false);
                                 }}>
                                 {language.label}
                                 <CheckIcon
