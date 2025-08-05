@@ -9,8 +9,8 @@ import { Fragment } from "react";
 import { UserIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { currentUser } from "@clerk/nextjs/server";
-import { DeleteAccount } from "./components/delete-account";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
+import { DeleteMyOwnAccount } from "./components/delete-my-own-account";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function Page() {
@@ -59,7 +59,7 @@ export default async function Page() {
           </CardContent>
         </Card>
         <div className="flex justify-end">
-          <DeleteAccount id={user?.id} />
+          <DeleteMyOwnAccount />
         </div>
       </MaxWidthWrapper>
     </Fragment>

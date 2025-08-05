@@ -1,6 +1,7 @@
 "use server";
 import z from "zod";
-import { schema } from "./create-room";
+import type { Room } from "@/types/api";
+import { schema } from "./components/create-room";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { axios_instance, CustomAxiosError } from "@/lib/axios";
 
@@ -8,8 +9,7 @@ export async function find_all_rooms() {
   try {
     const token = await (await auth()).getToken();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const response = await axios_instance.get<Array<any>>("/room/find-all", {
+    const response = await axios_instance.get<Array<Room>>("/room/find-all", {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -31,7 +31,7 @@ export async function create_room(values: z.infer<typeof schema>) {
 
     const token = await (await auth()).getToken();
 
-    const response = await axios_instance.post(
+    const response = await axios_instance.post<Room>(
       "/room/create",
       {
         user_id: user.id,

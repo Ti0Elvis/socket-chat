@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { useClerk } from "@clerk/nextjs";
 import { socket_room } from "@/lib/socket";
-import { find_all_rooms } from "./actions";
+import { find_all_rooms } from "../actions";
 import { Fragment, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
@@ -54,9 +54,9 @@ export function RenderRooms() {
           <Fragment>
             {query.data?.data?.map((e, index) => {
               const is_owner = e.owner.clerk.id === user?.id;
+
               const is_participate = e.users.some(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (e: any) => e.clerk.id === user?.id
+                (e) => e.clerk.id === user?.id
               );
 
               return (
@@ -69,9 +69,13 @@ export function RenderRooms() {
                         {e.name}
                       </h3>
                       {is_owner === true && (
-                        <Button variant="destructive">
-                          Delete room <Trash2Icon />
-                        </Button>
+                        <div className="hidden md:block">
+                          <Button
+                            variant="destructive"
+                            className="w-full md:w-auto">
+                            Delete Room <Trash2Icon />
+                          </Button>
+                        </div>
                       )}
                     </div>
                     <div className="flex items-center gap-2 text-sm">
@@ -84,7 +88,7 @@ export function RenderRooms() {
                       <span className="flex items-center gap-0.5">
                         <ClockIcon className="w-4 h-4" />
                         <p className="text-muted-foreground">
-                          {formatDistanceToNow(e.updatedAt, {
+                          {formatDistanceToNow(e.createdAt, {
                             addSuffix: true,
                           })}
                         </p>
@@ -103,7 +107,14 @@ export function RenderRooms() {
                       <Badge variant="outline">{e.tag}</Badge>
                     </div>
                   </CardHeader>
-                  <CardFooter>
+                  <CardFooter className="flex flex-col gap-4">
+                    <div className="block md:hidden w-full">
+                      <Button
+                        variant="destructive"
+                        className="w-full md:w-auto">
+                        Delete Room <Trash2Icon />
+                      </Button>
+                    </div>
                     <Button className="w-full">Join</Button>
                   </CardFooter>
                 </Card>

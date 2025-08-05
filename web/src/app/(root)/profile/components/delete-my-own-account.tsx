@@ -14,25 +14,21 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useClerk } from "@clerk/nextjs";
 import { Trash2Icon } from "lucide-react";
-import { delete_account } from "./actions";
 import { Button } from "@/components/ui/button";
+import { delete_my_own_account } from "../actions";
 import { useMutation } from "@tanstack/react-query";
 
-interface Props {
-  id: string | undefined;
-}
-
-export function DeleteAccount({ id }: Readonly<Props>) {
+export function DeleteMyOwnAccount() {
   const { signOut } = useClerk();
 
   const { mutate, isPending } = useMutation({
-    mutationKey: ["delete-account"],
+    mutationKey: ["delete-my-own-account"],
     mutationFn: async () => {
       await delay(1250); // Set a delay only to user experience
 
       signOut({ redirectUrl: "/" });
 
-      const { data, error } = await delete_account(id);
+      const { data, error } = await delete_my_own_account();
 
       if (error !== undefined) {
         throw new Error(error);

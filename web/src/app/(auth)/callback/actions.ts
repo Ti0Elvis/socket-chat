@@ -1,4 +1,5 @@
 "use server";
+import type { Clerk } from "@/types/api";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { axios_instance, CustomAxiosError } from "@/lib/axios";
 
@@ -22,7 +23,7 @@ export async function register_user_on_nestjs_api() {
         fullName: user.fullName,
         imageUrl: user.imageUrl,
         emailAddress: user.primaryEmailAddress?.emailAddress,
-      },
+      } satisfies Clerk,
       {
         headers: {
           Authorization: `Bearer ${token}`,

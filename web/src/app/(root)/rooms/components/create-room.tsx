@@ -32,7 +32,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { create_room } from "./actions";
+import { create_room } from "../actions";
 import { useForm } from "react-hook-form";
 import { socket_room } from "@/lib/socket";
 import { useRouter } from "next/navigation";
@@ -81,7 +81,7 @@ export function CreateRoom() {
   });
 
   const mutation = useMutation({
-    mutationKey: ["create-room"],
+    mutationKey: ["create-new-room"],
     mutationFn: async (values: z.infer<typeof schema>) => {
       const { data, error } = await create_room(values);
 
@@ -93,7 +93,7 @@ export function CreateRoom() {
     },
     onSuccess: (data) => {
       setDialog(false);
-      socket_room.emit("new-room");
+      socket_room.emit("join-to-room");
       push(`/rooms/${data._id}`);
     },
     onError: (error) => {
