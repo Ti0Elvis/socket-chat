@@ -7,7 +7,7 @@ export async function find_user_on_nestjs_api() {
     const user = await currentUser();
 
     if (user === null) {
-      throw new Error("Invalid user");
+      return { error: "Invalid user", status: 500 };
     }
 
     const token = await (await auth()).getToken();

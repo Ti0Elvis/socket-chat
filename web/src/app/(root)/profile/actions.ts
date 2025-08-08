@@ -2,12 +2,12 @@
 import { axios_instance, CustomAxiosError } from "@/lib/axios";
 import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 
-export async function delete_my_own_account() {
+export async function delete_own_account() {
   try {
     const user = await currentUser();
 
     if (user === null) {
-      throw new Error("Invalid user");
+      return { error: "Invalid user", status: 500 };
     }
 
     const token = await (await auth()).getToken();

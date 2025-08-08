@@ -9,12 +9,13 @@ import {
 import { currentUser } from "@clerk/nextjs/server";
 import { ModeToggle } from "@/components/mode-toggle";
 import { SignedIn, SignOutButton } from "@clerk/nextjs";
-import { find_user_on_nestjs_api } from "../(root)/actions";
+import { find_user_on_nestjs_api } from "@/app/(root)/actions";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export async function Header() {
   const user = await currentUser();
+
   const { error } = await find_user_on_nestjs_api();
 
   return (

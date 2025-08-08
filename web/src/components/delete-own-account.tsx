@@ -15,20 +15,20 @@ import {
 import { useClerk } from "@clerk/nextjs";
 import { Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { delete_my_own_account } from "../actions";
 import { useMutation } from "@tanstack/react-query";
+import { delete_own_account } from "@/app/(root)/profile/actions";
 
 export function DeleteMyOwnAccount() {
   const { signOut } = useClerk();
 
   const { mutate, isPending } = useMutation({
-    mutationKey: ["delete-my-own-account"],
+    mutationKey: ["delete-own-account"],
     mutationFn: async () => {
       await delay(1250); // Set a delay only to user experience
 
       signOut({ redirectUrl: "/" });
 
-      const { data, error } = await delete_my_own_account();
+      const { data, error } = await delete_own_account();
 
       if (error !== undefined) {
         throw new Error(error);
@@ -42,7 +42,7 @@ export function DeleteMyOwnAccount() {
     onError: (error) => {
       toast.error(error.message, {
         description:
-          "Please sign-in again and try to delete you account. If this problem persist please contact me to solve it",
+          "Please sign-in again and try to delete your account. If this problem persist please contact me to solve it",
       });
     },
   });

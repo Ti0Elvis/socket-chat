@@ -10,7 +10,7 @@ import { UserIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { currentUser } from "@clerk/nextjs/server";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
-import { DeleteMyOwnAccount } from "./components/delete-my-own-account";
+import { DeleteMyOwnAccount } from "@/components/delete-own-account";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function Page() {

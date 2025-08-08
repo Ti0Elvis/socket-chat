@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { MessageCircleIcon } from "lucide-react";
-import { CreateRoom } from "./components/create-room";
-import { RenderRooms } from "./components/render-rooms";
+import { CreateRoom } from "../../../components/create-room";
+import { RenderRooms } from "../../../components/render-rooms";
 import { Card, CardContent } from "@/components/ui/card";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
 

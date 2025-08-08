@@ -32,7 +32,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { create_room } from "../actions";
 import { useForm } from "react-hook-form";
 import { socket_room } from "@/lib/socket";
 import { useRouter } from "next/navigation";
@@ -41,6 +40,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { create_room } from "@/app/(root)/rooms/actions";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 
 const languages = [
