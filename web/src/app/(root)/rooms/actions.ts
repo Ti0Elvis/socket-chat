@@ -47,3 +47,54 @@ export async function create_room(values: z.infer<typeof schema>) {
     return { error: e.message, status: e.status };
   }
 }
+
+export async function join_to_room(_id: string | undefined) {
+  try {
+    if (_id === undefined) {
+      return { error: "Invalid _id", status: 500 };
+    }
+
+    const user = await currentUser();
+
+    if (user === null) {
+      return { error: "Invalid user", status: 500 };
+    }
+
+    const token = await (await auth()).getToken();
+
+    const response = await axios_instance.patch<string>(
+      `/room/join?user_id=${user.id}&&room_id=${_id}`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    return { data: response.data, status: response.status };
+  } catch (error) {
+    const e = new CustomAxiosError(error);
+
+    return { error: e.message, status: e.status };
+  }
+}
+
+export async function delete_room(_id: string | undefined) {
+  try {
+    if (_id === undefined) {
+      return { error: "Invalid _id", status: 500 };
+    }
+
+    const token = await (await auth()).getToken();
+
+    const response = await axios_instance.delete<string>(
+      `/room/delete/${_id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    return { data: response.data, status: response.status };
+  } catch (error) {
+    const e = new CustomAxiosError(error);
+
+    return { error: e.message, status: e.status };
+  }
+}
