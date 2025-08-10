@@ -62,7 +62,7 @@ export const schema = z.object({
   tag: z
     .string()
     .min(1, { message: "Please insert a tag for the room" })
-    .max(12),
+    .max(24),
 });
 
 export function CreateRoom() {
