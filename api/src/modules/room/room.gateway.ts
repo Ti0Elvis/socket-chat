@@ -30,4 +30,9 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
   HandleNewRoom() {
     this.server.emit("refetch-all-rooms");
   }
+
+  @SubscribeMessage("delete-room")
+  HandleDeleteRoom() {
+    this.server.emit("refetch-all-rooms");
+  }
 }
