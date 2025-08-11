@@ -1,9 +1,9 @@
 import { Fragment } from "react";
 import { MessageCircleIcon } from "lucide-react";
-import { CreateRoom } from "@/components/create-room";
-import { RenderRooms } from "@/components/render-rooms";
 import { Card, CardContent } from "@/components/ui/card";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
+import { CreateRoom } from "@/app/(root)/rooms/components/create-room";
+import { RenderRooms } from "@/app/(root)/rooms/components/render-rooms";
 
 export default function Page() {
   return (

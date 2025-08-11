@@ -1,7 +1,7 @@
-import { API } from "./constants";
+import { API } from "@/lib/constants";
 import { io } from "socket.io-client";
 
-export const socket_room = io(`${API}/room`, {
+export const socket_rooms = io(`${API}/rooms`, {
   transports: ["websocket"],
   timeout: 20000,
   autoConnect: true,

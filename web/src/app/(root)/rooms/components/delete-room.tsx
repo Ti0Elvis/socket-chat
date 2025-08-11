@@ -13,9 +13,9 @@ import {
 import type { Room } from "@/types/api";
 import { Trash2Icon } from "lucide-react";
 import { Fragment, useState } from "react";
-import { socket_room } from "@/lib/socket";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
+import { socket_rooms } from "@/app/(root)/rooms/socket";
 import { delete_room } from "@/app/(root)/rooms/actions";
 
 interface Props {
@@ -38,7 +38,9 @@ export function DeleteRoom({ room }: Readonly<Props>) {
     },
     onSuccess: (message) => {
       toast.success(message);
-      socket_room.emit("delete-room");
+
+      socket_rooms.emit("delete-room");
+
       setAlertDialog(false);
     },
     onError: (error) => {

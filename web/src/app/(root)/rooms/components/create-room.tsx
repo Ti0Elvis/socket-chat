@@ -33,13 +33,13 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
-import { socket_room } from "@/lib/socket";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { socket_rooms } from "@/app/(root)/rooms/socket";
 import { create_room } from "@/app/(root)/rooms/actions";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 
@@ -93,7 +93,9 @@ export function CreateRoom() {
     },
     onSuccess: (data) => {
       setDialog(false);
-      socket_room.emit("join-to-room");
+
+      socket_rooms.emit("new-room");
+
       push(`/rooms/${data._id}`);
     },
     onError: (error) => {

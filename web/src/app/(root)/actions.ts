@@ -2,7 +2,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { axios_instance, CustomAxiosError } from "@/lib/axios";
 
-export async function find_user_on_nestjs_api() {
+export async function find_user_by_clerk() {
   try {
     const user = await currentUser();
 

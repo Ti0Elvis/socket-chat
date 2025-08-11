@@ -1,20 +1,16 @@
 "use client";
-import { Badge } from "./ui/badge";
+import Link from "next/link";
 import type { Room } from "@/types/api";
-import { useClerk } from "@clerk/nextjs";
-import { DeleteRoom } from "./delete-room";
-import { JoinToRoom } from "./join-to-room";
+import { useUser } from "@clerk/nextjs";
+import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
-import { Card, CardFooter, CardHeader } from "./ui/card";
+import { Button } from "@/components/ui/button";
 import { ClockIcon, GlobeIcon, UsersIcon } from "lucide-react";
+import { Card, CardFooter, CardHeader } from "@/components/ui/card";
+import { DeleteRoom } from "@/app/(root)/rooms/components/delete-room";
 
-interface Props {
-  room: Room;
-}
-
-export function RoomCard({ room }: Readonly<Props>) {
-  const { user } = useClerk();
-
+export function CardRoom({ room }: Readonly<{ room: Room }>) {
+  const { user } = useUser();
   const is_owner = room.owner.clerk.id === user?.id;
 
   return (
@@ -58,7 +54,9 @@ export function RoomCard({ room }: Readonly<Props>) {
             <DeleteRoom room={room} />
           </div>
         )}
-        <JoinToRoom room={room} />
+        <Button className="w-full" asChild>
+          <Link href={`/rooms/${room._id}`}>Join</Link>
+        </Button>
       </CardFooter>
     </Card>
   );

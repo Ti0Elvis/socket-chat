@@ -1,8 +1,8 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
-import { Header } from "@/components/header";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Header } from "@/app/components/header";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/providers/query.provider";
 import { ThemeProvider } from "@/providers/theme.provider";

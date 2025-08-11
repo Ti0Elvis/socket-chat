@@ -1,4 +1,4 @@
-export interface Clerk {
+export interface UserClerk {
   id: string;
   firstName: string | null;
   lastName: string | null;
@@ -9,7 +9,7 @@ export interface Clerk {
 
 export interface User {
   _id: string;
-  clerk: Clerk;
+  clerk: UserClerk;
 }
 
 export interface Room {

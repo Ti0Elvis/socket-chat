@@ -1,6 +1,6 @@
 import { SignedIn } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import { find_user_on_nestjs_api } from "./actions";
+import { find_user_by_clerk } from "./actions";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 export const dynamic = "force-dynamic";
 
 export default async function Layout({ children }: Readonly<Props>) {
-  const { error } = await find_user_on_nestjs_api();
+  const { error } = await find_user_by_clerk();
 
   if (error !== undefined) {
     redirect("/callback");

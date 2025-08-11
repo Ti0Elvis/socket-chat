@@ -1,9 +1,9 @@
 "use client";
-import { RoomCard } from "./room-card";
+import { CardRoom } from "./card-room";
 import { LoaderIcon } from "lucide-react";
-import { socket_room } from "@/lib/socket";
 import { Fragment, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { socket_rooms } from "@/app/(root)/rooms/socket";
 import { find_all_rooms } from "@/app/(root)/rooms/actions";
 
 export function RenderRooms() {
@@ -13,12 +13,12 @@ export function RenderRooms() {
   });
 
   useEffect(() => {
-    socket_room.on("refetch-all-rooms", () => {
+    socket_rooms.on("refetch-all-rooms", () => {
       query.refetch();
     });
 
     return () => {
-      socket_room.off("refetch-all-rooms");
+      socket_rooms.off("refetch-all-rooms");
     };
   }, []);
 
@@ -48,7 +48,7 @@ export function RenderRooms() {
           {query.data.rooms !== undefined && query.data.rooms?.length > 0 && (
             <Fragment>
               {query.data?.rooms?.map((e) => {
-                return <RoomCard key={e._id} room={e} />;
+                return <CardRoom key={e._id} room={e} />;
               })}
             </Fragment>
           )}
