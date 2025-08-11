@@ -95,6 +95,6 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
 
     this.HandleRefetchAllRooms();
-    client.emit("join-notification", { message: response });
+    client.emit("leave-notification", { message: response });
   }
 }
