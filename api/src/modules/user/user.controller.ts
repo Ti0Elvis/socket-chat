@@ -9,7 +9,7 @@ import {
 } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { ClerkAuthGuard } from "@/guards/clerk.guard";
-import { RegisterUserDto } from "./dto/register-user.dto";
+import { EnsureUserRegisteredDto } from "./dto/ensure-user-registered.dto";
 
 @Controller("user")
 @UseGuards(ClerkAuthGuard)
@@ -21,9 +21,9 @@ export class UserController {
     return await this._UserService_.FindByClerkId(id);
   }
 
-  @Post("/register-if-not-exists")
-  async RegisterIfNotExists(@Body() body: RegisterUserDto) {
-    return await this._UserService_.RegisterIfNotExists(body);
+  @Post("/ensure-user-registered")
+  async EnsureUserRegistered(@Body() body: EnsureUserRegisteredDto) {
+    return await this._UserService_.EnsureUserRegistered(body);
   }
 
   @Delete("/delete-by-clerkId/:clerkId")

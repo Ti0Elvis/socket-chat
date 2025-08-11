@@ -4,16 +4,13 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
-  Query,
   UseGuards,
 } from "@nestjs/common";
 import type { Types } from "mongoose";
 import { RoomService } from "./room.service";
 import { ClerkAuthGuard } from "@/guards/clerk.guard";
 import { CreateRoomDto } from "./dto/create-room.dto";
-import { JoinToRoomDto } from "./dto/join-to-room.dto";
 
 @Controller("room")
 @UseGuards(ClerkAuthGuard)
@@ -33,11 +30,6 @@ export class RoomController {
   @Post("/create")
   async Create(@Body() body: CreateRoomDto) {
     return await this._RoomService_.Create(body);
-  }
-
-  @Patch("/join")
-  async Join(@Query() query: JoinToRoomDto) {
-    return await this._RoomService_.Join(query);
   }
 
   @Delete("/delete/:_id")

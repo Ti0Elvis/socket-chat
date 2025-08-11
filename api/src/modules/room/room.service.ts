@@ -48,7 +48,7 @@ export class RoomService {
         name: body.name,
         language: body.language,
         owner: user._id,
-        users: [user._id],
+        users: [],
         tag: body.tag,
       };
 
@@ -76,6 +76,31 @@ export class RoomService {
     } catch (error) {
       console.error(error);
       throw new HttpException("Error occurred while user joining to room", 500);
+    }
+  }
+
+  async Leave(query: JoinToRoomDto) {
+    const user = await this._UserService_.FindByClerkId(query.user_id);
+    const room = await this.FindById(query.room_id);
+
+    try {
+      const index = room.users.findIndex(
+        (id) => id.toString() === user._id.toString()
+      );
+
+      if (index !== -1) {
+        room.users.splice(index, 1);
+
+        await room.save();
+      }
+
+      return `Leave room "${room.name}"`;
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(
+        "Error occurred while user leaving the room",
+        500
+      );
     }
   }
 

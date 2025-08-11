@@ -1,8 +1,8 @@
 import type { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { User, UserDocument } from "./user.schema";
-import { RegisterUserDto } from "./dto/register-user.dto";
 import { HttpException, Injectable } from "@nestjs/common";
+import { EnsureUserRegisteredDto } from "./dto/ensure-user-registered.dto";
 
 @Injectable()
 export class UserService {
@@ -20,7 +20,7 @@ export class UserService {
     return user;
   }
 
-  async RegisterIfNotExists(body: RegisterUserDto) {
+  async EnsureUserRegistered(body: EnsureUserRegisteredDto) {
     // We don't use the FindByClerkId method because it throws an error when the user is not found.
     // In this method, we want to silently handle non-existing users without throwing an error.
     const existingUser = await this._UserModel_.findOne({
