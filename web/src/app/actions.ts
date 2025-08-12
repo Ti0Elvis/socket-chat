@@ -1,10 +1,9 @@
 "use server";
-import type { User } from "@/types/api";
 import type { Action } from "@/types/actions";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { axios_instance, CustomAxiosError } from "@/lib/axios";
 
-export async function register_current_user_on_api(): Action<string> {
+export async function is_registered_current_user_on_api(): Action<boolean> {
   try {
     const user = await currentUser();
 
@@ -15,20 +14,14 @@ export async function register_current_user_on_api(): Action<string> {
     const client = await auth();
     const token = await client.getToken();
 
-    const body: User = {
-      clerk_id: user.id,
-      first_name: user.firstName,
-      last_name: user.lastName,
-      full_name: user.fullName,
-      image_url: user.imageUrl,
-      email_address: user.primaryEmailAddress?.emailAddress,
-    };
-
-    const response = await axios_instance.post<string>("/user/register", body, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios_instance.get<boolean>(
+      `/user/is-registered/${user.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     return { data: response.data, ok: true };
   } catch (error) {

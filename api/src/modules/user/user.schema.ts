@@ -3,33 +3,25 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema({ _id: false })
-export class Clerk {
-  @Prop({ required: true, unique: true })
-  id: string;
-
-  @Prop({ required: true })
-  firstName: string;
-
-  @Prop({ required: true })
-  lastName: string;
-
-  @Prop({ required: true })
-  fullName: string;
-
-  @Prop({ required: true })
-  imageUrl: string;
-
-  @Prop({ required: true })
-  emailAddress: string;
-}
-
-export const ClerkSchema = SchemaFactory.createForClass(Clerk);
-
 @Schema()
 export class User {
-  @Prop({ type: ClerkSchema, required: true })
-  clerk: Clerk;
+  @Prop({ type: String, required: true, unique: true })
+  clerk_id: string;
+
+  @Prop({ type: String, required: true })
+  first_name: string;
+
+  @Prop({ type: String, required: true })
+  last_name: string;
+
+  @Prop({ type: String, required: true })
+  full_name: string;
+
+  @Prop({ type: String, required: true })
+  image_url: string;
+
+  @Prop({ type: String, required: true })
+  email_address: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

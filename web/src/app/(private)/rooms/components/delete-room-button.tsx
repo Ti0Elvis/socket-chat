@@ -11,37 +11,37 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import type { Room } from "@/types/api";
+import { delete_room } from "../actions";
 import { Trash2Icon } from "lucide-react";
-import { Fragment, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
-import { socket_rooms } from "@/app/(root)/rooms/socket";
-import { delete_room } from "@/app/(root)/rooms/actions";
+import { RoomSocketContext } from "../context/socket";
+import { Fragment, useContext, useState } from "react";
 
 interface Props {
   room: Room;
 }
 
-export function DeleteRoom({ room }: Readonly<Props>) {
+export function DeleteRoomButton({ room }: Readonly<Props>) {
   const [alertDialog, setAlertDialog] = useState(false);
 
-  const { mutate, isPending } = useMutation({
+  const context = useContext(RoomSocketContext)!;
+
+  const mutation = useMutation({
     mutationKey: ["delete-room"],
     mutationFn: async () => {
-      const { data, error } = await delete_room(room._id);
+      const response = await delete_room(room._id);
 
-      if (error !== undefined) {
-        throw new Error(error);
+      if (response.ok === false) {
+        throw new Error(response.error);
       }
 
-      return data;
+      return response.data;
     },
     onSuccess: (message) => {
-      toast.success(message);
-
-      socket_rooms.emit("delete-room");
-
       setAlertDialog(false);
+      context.socket?.emit("delete-room");
+      toast.success(message);
     },
     onError: (error) => {
       toast.error(error.message);
@@ -64,12 +64,14 @@ export function DeleteRoom({ room }: Readonly<Props>) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={mutation.isPending}>
+            Cancel
+          </AlertDialogCancel>
           <Button
             variant="destructive"
-            disabled={isPending}
-            onClick={() => mutate()}>
-            {isPending === true ? (
+            disabled={mutation.isPending}
+            onClick={() => mutation.mutate()}>
+            {mutation.isPending === true ? (
               "Loading..."
             ) : (
               <Fragment>

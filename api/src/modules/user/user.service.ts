@@ -1,8 +1,12 @@
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from "@nestjs/common";
 import type { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
-import { User, UserDocument } from "./user.schema";
-import { HttpException, Injectable } from "@nestjs/common";
-import { EnsureUserRegisteredDto } from "./dto/ensure-user-registered.dto";
+import { User, type UserDocument } from "./user.schema";
+import { RegisterUserDto } from "./dto/register-user.dto";
 
 @Injectable()
 export class UserService {
@@ -10,21 +14,25 @@ export class UserService {
     @InjectModel(User.name) private _UserModel_: Model<UserDocument>
   ) {}
 
-  async FindByClerkId(id: string) {
-    const user = await this._UserModel_.findOne({ "clerk.id": id });
+  async FindByClerkId(clerk_id: string) {
+    const user = await this._UserModel_.findOne({ clerk_id });
 
     if (user === null) {
-      throw new HttpException("User not found", 404);
+      throw new NotFoundException("User not found");
     }
 
     return user;
   }
 
-  async EnsureUserRegistered(body: EnsureUserRegisteredDto) {
+  async IsRegistered(clerk_id: string) {
+    return !!(await this.FindByClerkId(clerk_id));
+  }
+
+  async Register(body: RegisterUserDto) {
     // We don't use the FindByClerkId method because it throws an error when the user is not found.
     // In this method, we want to silently handle non-existing users without throwing an error.
     const existingUser = await this._UserModel_.findOne({
-      "clerk.id": body.id,
+      clerk_id: body.clerk_id,
     });
 
     if (existingUser !== null) {
@@ -32,19 +40,19 @@ export class UserService {
     }
 
     try {
-      const payload: User = { clerk: { ...body } };
-
-      await this._UserModel_.create(payload);
+      await this._UserModel_.create(body);
 
       return "User created successfully";
     } catch (error) {
       console.error(error);
-      throw new HttpException("Error occurred while creating user", 500);
+      throw new InternalServerErrorException(
+        "Error occurred while creating user"
+      );
     }
   }
 
-  async DeleteByClerkId(id: string) {
-    const user = await this.FindByClerkId(id);
+  async DeleteByClerkId(clerk_id: string) {
+    const user = await this.FindByClerkId(clerk_id);
 
     try {
       await user.deleteOne();
@@ -52,7 +60,9 @@ export class UserService {
       return "User deleted successfully";
     } catch (error) {
       console.error(error);
-      throw new HttpException("Error occurred while deleting user", 500);
+      throw new InternalServerErrorException(
+        "Error occurred while deleting user"
+      );
     }
   }
 }

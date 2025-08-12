@@ -1,10 +1,14 @@
-import { Model, Types } from "mongoose";
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from "@nestjs/common";
+import { type Model, Types } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
-import { Room, RoomDocument } from "./room.schema";
+import { UserService } from "../user/user.service";
 import { CreateRoomDto } from "./dto/create-room.dto";
-import { JoinToRoomDto } from "./dto/join-to-room.dto";
-import { UserService } from "@/modules/user/user.service";
-import { HttpException, Injectable } from "@nestjs/common";
+import { Room, type RoomDocument } from "./room.schema";
 
 @Injectable()
 export class RoomService {
@@ -15,13 +19,13 @@ export class RoomService {
 
   async FindById(_id: Types.ObjectId) {
     if (Types.ObjectId.isValid(_id) === false) {
-      throw new HttpException("Invalid _id", 400);
+      throw new BadRequestException("Invalid _id");
     }
 
     const room = await this._RoomModule_.findById(_id);
 
     if (room === null) {
-      throw new HttpException("Room not found", 404);
+      throw new NotFoundException("Room not found");
     }
 
     return room;
@@ -36,11 +40,11 @@ export class RoomService {
   }
 
   async Create(body: CreateRoomDto) {
-    const user = await this._UserService_.FindByClerkId(body.user_id);
+    const user = await this._UserService_.FindByClerkId(body.clerk_id);
     const room = await this._RoomModule_.findOne({ name: body.name });
 
     if (room !== null) {
-      throw new HttpException("There is already a room with this name", 400);
+      throw new BadRequestException("There is already a room with this name");
     }
 
     try {
@@ -57,12 +61,14 @@ export class RoomService {
       return room;
     } catch (error) {
       console.error(error);
-      throw new HttpException("Error occurred while creating room", 500);
+      throw new InternalServerErrorException(
+        "Error occurred while creating room"
+      );
     }
   }
 
-  async Join(query: JoinToRoomDto) {
-    const user = await this._UserService_.FindByClerkId(query.user_id);
+  async Join(query: { clerk_id: string; room_id: Types.ObjectId }) {
+    const user = await this._UserService_.FindByClerkId(query.clerk_id);
     const room = await this.FindById(query.room_id);
 
     try {
@@ -72,15 +78,17 @@ export class RoomService {
         await room.save();
       }
 
-      return `Join to room "${room.name}"`;
+      return "Join to room";
     } catch (error) {
       console.error(error);
-      throw new HttpException("Error occurred while user joining to room", 500);
+      throw new InternalServerErrorException(
+        "Error occurred while user joining to room"
+      );
     }
   }
 
-  async Leave(query: JoinToRoomDto) {
-    const user = await this._UserService_.FindByClerkId(query.user_id);
+  async Leave(query: { clerk_id: string; room_id: Types.ObjectId }) {
+    const user = await this._UserService_.FindByClerkId(query.clerk_id);
     const room = await this.FindById(query.room_id);
 
     try {
@@ -94,16 +102,16 @@ export class RoomService {
         await room.save();
       }
 
-      return `Leave room "${room.name}"`;
+      return "Leave room";
     } catch (error) {
       console.error(error);
-      throw new HttpException(
-        "Error occurred while user leaving the room",
-        500
+      throw new InternalServerErrorException(
+        "Error occurred while user leaving the room"
       );
     }
   }
 
+  // This is insecure because it does not validate that the user is the room owner
   async Delete(_id: Types.ObjectId) {
     const room = await this.FindById(_id);
 
@@ -113,7 +121,9 @@ export class RoomService {
       return "Room deleted successfully";
     } catch (error) {
       console.error(error);
-      throw new HttpException("Error occurred while deleting room", 500);
+      throw new InternalServerErrorException(
+        "Error occurred while deleting room"
+      );
     }
   }
 }

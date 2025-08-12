@@ -9,14 +9,13 @@ import {
 import { currentUser } from "@clerk/nextjs/server";
 import { ModeToggle } from "@/components/mode-toggle";
 import { SignedIn, SignOutButton } from "@clerk/nextjs";
-import { find_user_by_clerk } from "@/app/(root)/actions";
+import { is_registered_current_user_on_api } from "../actions";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export async function Header() {
   const user = await currentUser();
-
-  const { error } = await find_user_by_clerk();
+  const response = await is_registered_current_user_on_api();
 
   return (
     <header className="w-full h-16 sticky top-0 left-0 border-b bg-background/75 backdrop-blur-md">
@@ -33,7 +32,7 @@ export async function Header() {
           <span className="text-primary text-lg font-bold">socket-chat</span>
         </div>
         <div className="flex items-center gap-2">
-          {error === undefined && (
+          {response.ok === true && (
             <SignedIn>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -53,7 +52,7 @@ export async function Header() {
                     <Link href="/rooms">Rooms</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <SignOutButton signOutOptions={{ redirectUrl: "/" }}>
+                    <SignOutButton signOutOptions={{ redirectUrl: "/welcome" }}>
                       <p className="w-full">Sign out</p>
                     </SignOutButton>
                   </DropdownMenuItem>

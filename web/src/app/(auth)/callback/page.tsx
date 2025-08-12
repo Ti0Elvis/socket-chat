@@ -1,31 +1,38 @@
 "use client";
+import { useEffect } from "react";
 import { LoaderIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { ensure_user_registered } from "./actions";
+import { register_current_user_on_api } from "./actions";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
 
 export default function Page() {
-  const { push } = useRouter();
+  const router = useRouter();
 
-  useQuery({
-    queryKey: ["ensure-user-registered"],
+  const query = useQuery({
+    queryKey: ["register-current-user-on-api"],
     queryFn: async () => {
-      const { data, status, error } = await ensure_user_registered();
+      const response = await register_current_user_on_api();
 
-      if (status === 201) {
-        push("/rooms");
+      if (response.ok === false) {
+        throw new Error(response.error);
       }
 
-      if (error !== undefined) {
-        throw new Error(error);
-      }
-
-      return data;
+      return response.data;
     },
     retry: true,
     retryDelay: 1250,
   });
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      router.push("/rooms");
+    }
+  }, [query.isSuccess, router]);
+
+  if (query.error !== null) {
+    throw new Error(query.error.message);
+  }
 
   return (
     <MaxWidthWrapper className="w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center gap-4 text-center">

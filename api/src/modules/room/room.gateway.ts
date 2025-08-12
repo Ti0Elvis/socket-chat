@@ -7,7 +7,7 @@ import {
   MessageBody,
   ConnectedSocket,
 } from "@nestjs/websockets";
-import { Types } from "mongoose";
+import type { Types } from "mongoose";
 import { Server, Socket } from "socket.io";
 import { RoomService } from "./room.service";
 
@@ -22,48 +22,66 @@ import { RoomService } from "./room.service";
 export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private _RoomService_: RoomService) {}
 
-  @WebSocketServer() server: Server;
+  @WebSocketServer() private server: Server;
+
+  private rooms_connections = new Map<string, Map<string, Set<string>>>();
 
   handleConnection(client: Socket) {
-    console.log(`Client connected to rooms: ${client.id}`);
+    console.log(`Client connected: ${client.id}`);
   }
 
-  /* 
-    Bug: When a user opens the same room in two or more browser tabs, two socket connections are created. Each connection is independent. 
-    When one tab closes and disconnects its socket, the server thinks the user left the room entirely, even though the other tab is still connected. 
-    This causes the user to appear disconnected from the room, even though they are still connected from the other tab.
-  */
   async handleDisconnect(client: Socket) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const room_id = client.data.room_id as Types.ObjectId;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const clerk_id = client.data.clerk_id as string;
 
-    if (room_id !== undefined && clerk_id !== undefined) {
-      await this._RoomService_.Leave({
-        room_id: room_id,
-        user_id: clerk_id,
-      });
-
-      this.HandleRefetchAllRooms();
+    if (room_id === undefined || clerk_id === undefined) {
+      return;
     }
 
-    console.log(`Client disconnected to rooms: ${client.id}`);
-  }
+    const users_map = this.rooms_connections.get(room_id.toString());
 
-  HandleRefetchAllRooms() {
-    this.server.emit("refetch-all-rooms");
+    if (users_map === undefined) {
+      return;
+    }
+
+    const connections = users_map.get(clerk_id);
+
+    if (connections === undefined) {
+      return;
+    }
+
+    connections.delete(client.id);
+
+    if (connections.size === 0) {
+      users_map.delete(clerk_id);
+      await this._RoomService_.Leave({ room_id, clerk_id });
+      this.server.emit("refetch-all-rooms");
+    }
+
+    if (users_map.size === 0) {
+      this.rooms_connections.delete(room_id.toString());
+    }
+
+    console.log(`Client disconnected ${client.id}`);
   }
 
   @SubscribeMessage("new-room")
   HandleNewRoom() {
-    this.HandleRefetchAllRooms();
+    this.server.emit("refetch-all-rooms");
   }
 
   @SubscribeMessage("delete-room")
-  HandleDeleteRoom() {
-    this.HandleRefetchAllRooms();
-    this.server.emit("redirect-to-rooms-page");
+  HandleDeleteRoom(@ConnectedSocket() client: Socket) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const room_id = client.data.room_id as Types.ObjectId;
+
+    if (room_id !== undefined) {
+      this.server.to(room_id.toString()).emit("redirect-to-rooms-page");
+    }
+
+    this.server.emit("refetch-all-rooms");
   }
 
   @SubscribeMessage("join")
@@ -71,18 +89,37 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: { room_id: Types.ObjectId; clerk_id: string },
     @ConnectedSocket() client: Socket
   ) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    client.data.room_id = data.room_id;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    client.data.clerk_id = data.clerk_id;
+    const room_id = data.room_id;
+    const clerk_id = data.clerk_id;
 
-    const response = await this._RoomService_.Join({
-      room_id: data.room_id,
-      user_id: data.clerk_id,
-    });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    client.data.room_id = room_id;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    client.data.clerk_id = clerk_id;
 
-    this.HandleRefetchAllRooms();
-    client.emit("join-notification", { message: response });
+    await client.join(data.room_id.toString());
+
+    if (this.rooms_connections.has(room_id.toString()) === false) {
+      this.rooms_connections.set(room_id.toString(), new Map());
+    }
+
+    const users_map = this.rooms_connections.get(room_id.toString())!;
+
+    if (users_map.has(clerk_id) === false) {
+      users_map.set(clerk_id, new Set());
+    }
+
+    users_map.get(clerk_id)!.add(client.id);
+
+    try {
+      const response = await this._RoomService_.Join(data);
+
+      this.server.emit("refetch-all-rooms");
+      client.emit("join-notification", { message: response });
+    } catch (error) {
+      console.error(error);
+      client.emit("system-client-error", { message: "Error to join to room" });
+    }
   }
 
   @SubscribeMessage("leave")
@@ -90,12 +127,30 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: { room_id: Types.ObjectId; clerk_id: string },
     @ConnectedSocket() client: Socket
   ) {
-    const response = await this._RoomService_.Leave({
-      room_id: data.room_id,
-      user_id: data.clerk_id,
-    });
+    const room_id = data.room_id;
+    const clerk_id = data.clerk_id;
 
-    this.HandleRefetchAllRooms();
-    client.emit("leave-notification", { message: response });
+    const users_map = this.rooms_connections.get(room_id.toString());
+
+    if (users_map !== undefined) {
+      users_map.delete(clerk_id);
+
+      if (users_map.size === 0) {
+        this.rooms_connections.delete(room_id.toString());
+      }
+    }
+    await client.leave(data.room_id.toString());
+
+    try {
+      const response = await this._RoomService_.Leave(data);
+
+      this.server.emit("refetch-all-rooms");
+      client.emit("leave-notification", { message: response });
+    } catch (error) {
+      console.error(error);
+      client.emit("system-client-error", {
+        message: "Error to leave the room",
+      });
+    }
   }
 }

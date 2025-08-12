@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString, MaxLength } from "class-validator";
 export class CreateRoomDto {
   @IsString()
   @IsNotEmpty()
-  user_id: string;
+  clerk_id: string;
 
   @IsString()
   @IsNotEmpty()
@@ -15,6 +15,6 @@ export class CreateRoomDto {
 
   @IsString()
   @IsNotEmpty()
-  @MaxLength(12)
+  @MaxLength(24)
   tag: string;
 }

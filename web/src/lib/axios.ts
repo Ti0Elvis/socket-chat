@@ -4,6 +4,11 @@ import axios, { isAxiosError } from "axios";
 export const axios_instance = axios.create({
   baseURL: API,
   withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+  timeout: 10000,
 });
 
 export class CustomAxiosError extends Error {

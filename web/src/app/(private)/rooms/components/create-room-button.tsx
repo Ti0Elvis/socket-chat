@@ -2,14 +2,6 @@
 import z from "zod";
 import { toast } from "sonner";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
   Form,
   FormControl,
   FormDescription,
@@ -19,6 +11,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Command,
   CommandEmpty,
   CommandGroup,
@@ -26,35 +31,18 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { create_room } from "../actions";
 import { useForm } from "react-hook-form";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { languages } from "@/lib/constants";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { socket_rooms } from "@/app/(root)/rooms/socket";
-import { create_room } from "@/app/(root)/rooms/actions";
+import { RoomSocketContext } from "../context/socket";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-
-const languages = [
-  { label: "English", value: "English" },
-  { label: "French", value: "French" },
-  { label: "German", value: "German" },
-  { label: "Spanish", value: "Spanish" },
-  { label: "Portuguese", value: "Portuguese" },
-  { label: "Russian", value: "Russian" },
-  { label: "Japanese", value: "Japanese" },
-  { label: "Korean", value: "Korean" },
-  { label: "Chinese", value: "Chinese" },
-  { label: "Italian", value: "Italian" },
-];
 
 export const schema = z.object({
   name: z.string().min(1, { message: "Please insert a name for the room" }),
@@ -65,11 +53,13 @@ export const schema = z.object({
     .max(24),
 });
 
-export function CreateRoom() {
+export function CreateRoomButton() {
   const [dialog, setDialog] = useState(false);
   const [popover, setPopover] = useState(false);
 
-  const { push } = useRouter();
+  const context = useContext(RoomSocketContext)!;
+
+  const router = useRouter();
 
   const form = useForm({
     resolver: zodResolver(schema),
@@ -81,22 +71,20 @@ export function CreateRoom() {
   });
 
   const mutation = useMutation({
-    mutationKey: ["create-new-room"],
+    mutationKey: ["create-room"],
     mutationFn: async (values: z.infer<typeof schema>) => {
-      const { data, error } = await create_room(values);
+      const response = await create_room(values);
 
-      if (error !== undefined) {
-        throw new Error(error);
+      if (response.ok === false) {
+        throw new Error(response.error);
       }
 
-      return data;
+      return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: (room) => {
       setDialog(false);
-
-      socket_rooms.emit("new-room");
-
-      push(`/rooms/${data._id}`);
+      context.socket?.emit("new-room");
+      router.push(`/rooms/${room._id}`);
     },
     onError: (error) => {
       toast.error(error.message);
@@ -109,7 +97,7 @@ export function CreateRoom() {
     if (dialog === false) {
       form.reset();
     }
-  }, [dialog]);
+  }, [dialog, form]);
 
   return (
     <Dialog open={dialog} onOpenChange={setDialog}>
@@ -120,7 +108,7 @@ export function CreateRoom() {
         <DialogHeader>
           <DialogTitle>Room Form</DialogTitle>
           <DialogDescription>
-            Start a room to chat with your friends
+            Start a room to chat with others users
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

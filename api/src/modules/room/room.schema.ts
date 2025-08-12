@@ -18,7 +18,7 @@ export class Room {
   @Prop({ type: [{ type: Types.ObjectId, ref: User.name }], default: [] })
   users: Array<Types.ObjectId>;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, maxlength: 24 })
   tag: string;
 }
 

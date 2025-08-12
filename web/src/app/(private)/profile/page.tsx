@@ -10,7 +10,7 @@ import { UserIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { currentUser } from "@clerk/nextjs/server";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
-import { DeleteMyOwnAccount } from "@/components/delete-own-account";
+import { DeleteCurrentUser } from "./components/delete-current-user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function Page() {
@@ -31,7 +31,7 @@ export default async function Page() {
           </div>
           <div className="flex flex-col">
             <h2 className="text-4xl">{user?.fullName}</h2>
-            <Badge>socket member</Badge>
+            <Badge className="text-white">socket member</Badge>
           </div>
         </div>
         <Card>
@@ -59,7 +59,7 @@ export default async function Page() {
           </CardContent>
         </Card>
         <div className="flex justify-end">
-          <DeleteMyOwnAccount />
+          <DeleteCurrentUser />
         </div>
       </MaxWidthWrapper>
     </Fragment>

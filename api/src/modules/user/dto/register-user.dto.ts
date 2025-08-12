@@ -1,25 +1,25 @@
 import { IsEmail, IsNotEmpty, IsString, IsUrl } from "class-validator";
 
-export class EnsureUserRegisteredDto {
+export class RegisterUserDto {
   @IsString()
   @IsNotEmpty()
-  id: string;
+  clerk_id: string;
 
   @IsString()
   @IsNotEmpty()
-  firstName: string;
+  first_name: string;
 
   @IsString()
   @IsNotEmpty()
-  lastName: string;
+  last_name: string;
 
   @IsString()
   @IsNotEmpty()
-  fullName: string;
+  full_name: string;
 
   @IsUrl()
-  imageUrl: string;
+  image_url: string;
 
   @IsEmail()
-  emailAddress: string;
+  email_address: string;
 }

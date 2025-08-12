@@ -9,25 +9,25 @@ import {
 } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { ClerkAuthGuard } from "@/guards/clerk.guard";
-import { EnsureUserRegisteredDto } from "./dto/ensure-user-registered.dto";
+import { RegisterUserDto } from "./dto/register-user.dto";
 
 @Controller("user")
 @UseGuards(ClerkAuthGuard)
 export class UserController {
   constructor(private _UserService_: UserService) {}
 
-  @Get("/find-by-clerkId/:clerkId")
-  async FindByClerkId(@Param("clerkId") id: string) {
-    return await this._UserService_.FindByClerkId(id);
+  @Get("/is-registered/:clerk_id")
+  async IsRegistered(@Param("clerk_id") clerk_id: string) {
+    return await this._UserService_.IsRegistered(clerk_id);
   }
 
-  @Post("/ensure-user-registered")
-  async EnsureUserRegistered(@Body() body: EnsureUserRegisteredDto) {
-    return await this._UserService_.EnsureUserRegistered(body);
+  @Post("/register")
+  async Register(@Body() body: RegisterUserDto) {
+    return await this._UserService_.Register(body);
   }
 
-  @Delete("/delete-by-clerkId/:clerkId")
-  async DeleteByClerkId(@Param("clerkId") id: string) {
-    return await this._UserService_.DeleteByClerkId(id);
+  @Delete("/delete/:clerk_id")
+  async DeleteByClerkId(@Param("clerk_id") clerk_id: string) {
+    return await this._UserService_.DeleteByClerkId(clerk_id);
   }
 }
