@@ -2,12 +2,14 @@
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
 import { socket_rooms } from "../socket";
-import { useParams } from "next/navigation";
 import { Fragment, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 
 export default function Page() {
   const { user } = useUser();
   const params = useParams<{ _id: string }>();
+
+  const { push } = useRouter();
 
   /* 
     Bug: When a user opens the same room in two or more browser tabs, two socket connections are created. Each connection is independent. 
@@ -48,6 +50,16 @@ export default function Page() {
       }, 250);
     };
   }, [params._id, user?.id]);
+
+  useEffect(() => {
+    socket_rooms.on("redirect-to-rooms-page", () => {
+      push("/rooms");
+    });
+
+    return () => {
+      socket_rooms.off("redirect-to-rooms-page");
+    };
+  }, []);
 
   return <Fragment>{params._id}</Fragment>;
 }

@@ -63,6 +63,7 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("delete-room")
   HandleDeleteRoom() {
     this.HandleRefetchAllRooms();
+    this.server.emit("redirect-to-rooms-page");
   }
 
   @SubscribeMessage("join")
