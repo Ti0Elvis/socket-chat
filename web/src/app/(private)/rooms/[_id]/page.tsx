@@ -46,7 +46,7 @@ export default function Page() {
         context.socket?.off("join-notification");
         context.socket?.off("leave-notification");
         context.socket?.off("redirect-to-rooms-page");
-      }, 250);
+      }, 1250);
     };
   }, [params._id, user?.id, context.socket, router]);
 
