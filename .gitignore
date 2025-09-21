@@ -1,0 +1,14 @@
+# DEPENDENCY DIRECTORIES
+node_modules
+.pnpm-lock.yaml
+
+# BUILD FILES
+dist
+.next
+
+# ENV FILES
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
