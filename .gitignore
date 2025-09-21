@@ -1,6 +1,5 @@
 # DEPENDENCY DIRECTORIES
 node_modules
-.pnpm-lock.yaml
 
 # BUILD FILES
 dist

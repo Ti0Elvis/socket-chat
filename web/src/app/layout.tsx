@@ -1,6 +1,8 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { dark } from "@clerk/themes";
 import { Roboto } from "next/font/google";
+import { Header } from "@/components/header";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/providers/query.provider";
@@ -21,7 +23,15 @@ interface Props {
 
 export default function Layout({ children }: Readonly<Props>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        theme: dark,
+        variables: {
+          colorPrimary: "#00bc7d",
+          colorPrimaryForeground: "#f0fdf4",
+        },
+      }}
+    >
       <html lang="en" suppressHydrationWarning>
         <body className={roboto.className}>
           <ThemeProvider
@@ -31,9 +41,8 @@ export default function Layout({ children }: Readonly<Props>) {
             disableTransitionOnChange
           >
             <QueryProvider>
-              <main className="w-full min-h-[calc(100vh-4rem)]">
-                {children}
-              </main>
+              <Header />
+              <main className="w-full">{children}</main>
             </QueryProvider>
             <Toaster />
           </ThemeProvider>
