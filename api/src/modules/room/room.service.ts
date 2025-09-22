@@ -46,6 +46,10 @@ export class RoomService {
       throw new BadRequestException("Please insert as param a correct number");
     }
 
+    if (page < 1) {
+      throw new BadRequestException("Page number must be greater than 0");
+    }
+
     const size = 3;
     const rooms = await this._RoomModule_
       .find()

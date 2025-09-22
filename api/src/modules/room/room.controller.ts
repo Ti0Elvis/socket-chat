@@ -12,17 +12,17 @@ export class RoomController {
     return this._RoomService_.createRoom(body);
   }
 
-  @Get("find-all-rooms/:page")
+  @Get("find-all/:page")
   async findAllRooms(@Param("page") page: number) {
     return await this._RoomService_.findAllRooms(page);
   }
 
-  @Get("find-room/:id")
+  @Get("find-by-id/:id")
   async findRoomById(@Param("id") id: Types.ObjectId) {
     return await this._RoomService_.findRoomById(id);
   }
 
-  @Delete("delete-room/:id/:owner")
+  @Delete("delete-by-id/:id/:owner")
   async deleteRoomById(
     @Param("id") id: Types.ObjectId,
     @Param("owner") owner: string

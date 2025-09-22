@@ -44,7 +44,7 @@ export default function Layout({ children }: Readonly<Props>) {
               <Header />
               <main className="w-full">{children}</main>
             </QueryProvider>
-            <Toaster />
+            <Toaster richColors />
           </ThemeProvider>
         </body>
       </html>
