@@ -1,16 +1,12 @@
 "use client";
-import Link from "next/link";
-import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import DeleteRoom from "./delete-room";
+import { CardRoom } from "./card-room";
 import { useUser } from "@clerk/nextjs";
 import type { Room } from "@/types/room";
+import { LoaderIcon } from "lucide-react";
 import { Fragment, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardFooter, CardHeader } from "./ui/card";
 import { find_all_rooms } from "@/app/(root)/rooms/actions";
-import { ClockIcon, GlobeIcon, LoaderIcon } from "lucide-react";
 
 export function ShowRooms() {
   const [page, setPage] = useState(1);
@@ -55,65 +51,20 @@ export function ShowRooms() {
     );
   }
 
+  if (query.error !== null) {
+    throw new Error(query.error.message);
+  }
+
   return (
     <Fragment>
       {rooms.map((room) => {
-        const is_owner = room.owner === user?.id;
-
         return (
-          <Card
+          <CardRoom
             key={room._id}
-            className="group hover:shadow-lg transition-all duration-200 border-2 hover:border-primary/60"
-          >
-            <CardHeader>
-              <div className="flex justify-between">
-                <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
-                  {room.name}
-                </h3>
-                {is_owner === true && (
-                  <div className="hidden md:block">
-                    <DeleteRoom
-                      room={room}
-                      owner_id={user?.id}
-                      setRooms={setRooms}
-                    />
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <div className="flex gap-0.5">
-                  <ClockIcon className="w-4 h-4" />
-                  <p className="text-muted-foreground">
-                    {room.createdAt !== undefined &&
-                      formatDistanceToNow(room.createdAt, {
-                        addSuffix: true,
-                      })}
-                  </p>
-                </div>
-                <div className="flex gap-0.5">
-                  <GlobeIcon className="w-4 h-4" />
-                  <p className="text-muted-foreground">{room.language}</p>
-                </div>
-              </div>
-              <div>
-                <Badge variant="outline">{room.tag}</Badge>
-              </div>
-            </CardHeader>
-            <CardFooter className="flex flex-col gap-4">
-              {is_owner === true && (
-                <div className="block md:hidden w-full">
-                  <DeleteRoom
-                    room={room}
-                    owner_id={user?.id}
-                    setRooms={setRooms}
-                  />
-                </div>
-              )}
-              <Button className="w-full" asChild>
-                <Link href={`/rooms/${room._id}`}>Join</Link>
-              </Button>
-            </CardFooter>
-          </Card>
+            room={room}
+            user_id={user?.id}
+            setRooms={setRooms}
+          />
         );
       })}
       <Button onClick={() => query.refetch()} variant="outline">
