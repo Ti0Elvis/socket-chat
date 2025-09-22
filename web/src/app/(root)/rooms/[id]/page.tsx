@@ -1,10 +1,12 @@
 "use client";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import { Room } from "@/types/room";
 import { LoaderIcon } from "lucide-react";
 import { find_room_by_id } from "./actions";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { CardChat } from "@/components/card-chat";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
 import { MessageSocketProvider } from "@/context/socket-message";
 
@@ -20,7 +22,7 @@ export default function Page() {
         throw new Error(response.error);
       }
 
-      return response.data;
+      return response.data as Room;
     },
     retry: false,
     refetchOnWindowFocus: false,
@@ -51,8 +53,8 @@ export default function Page() {
 
   return (
     <MaxWidthWrapper className="w-full h-[calc(100vh-4rem)] py-12">
-      <MessageSocketProvider>
-        Connecting to room {query.data._id}
+      <MessageSocketProvider room_id={query.data._id}>
+        <CardChat room={query.data} />
       </MessageSocketProvider>
     </MaxWidthWrapper>
   );

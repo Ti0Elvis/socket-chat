@@ -10,10 +10,11 @@ interface Context {
 export const MessageSocketContext = createContext<Context | null>(null);
 
 interface Props {
+  room_id?: string;
   children: React.ReactNode;
 }
 
-export function MessageSocketProvider({ children }: Readonly<Props>) {
+export function MessageSocketProvider({ children, room_id }: Readonly<Props>) {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
@@ -22,6 +23,9 @@ export function MessageSocketProvider({ children }: Readonly<Props>) {
       timeout: 20000,
       autoConnect: true,
       withCredentials: true,
+      query: {
+        room_id: room_id || "",
+      },
     });
 
     setSocket(socket_message);

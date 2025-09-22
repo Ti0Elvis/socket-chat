@@ -1,9 +1,9 @@
 export interface Room {
-  _id?: string;
+  _id: string;
   name: string;
   language: string;
   owner: string;
   tag: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
